@@ -4,6 +4,9 @@ from django.utils.decorators import method_decorator
 from django.shortcuts import render, render_to_response
 from django.views.generic import TemplateView
 from django.views.generic.base import View, TemplateResponseMixin, ContextMixin
+from django.views.generic.detail import DetailView
+from django.views.generic.list import ListView
+from .models import Person
 
 
 # class LoginRequiredMixin(object):
@@ -33,3 +36,16 @@ class MyView(ContextMixin, TemplateResponseMixin, View):
     # @method_decorator(login_required)
     # def dispatch(self, request, *args, **kwargs):
     #     return super(MyView, self).dispatch(request, *args, **kwargs)
+
+class PersonDetailView(DetailView):
+    template_name = "detail.html"    
+    lookup_field = "slug"
+    model = Person
+
+class PersonListView(ListView):
+    model = Person
+    template_name = "list.html"
+
+    def get_queryset(self, *args, **kwargs):
+        qs = super(PersonListView, self).get_queryset(*args, **kwargs).filter()[:3]
+        return qs
