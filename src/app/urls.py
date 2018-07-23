@@ -4,6 +4,7 @@ from .views import (
 	MyView,
 	PersonDetailView,
 	PersonListView,
+	PersonCreateView,
 	)
 
 
@@ -12,4 +13,5 @@ urlpatterns = [
     url(r'^app/myview/$',MyView.as_view(template_name = "home.html")),
     url(r'^app/person/$',PersonListView.as_view(), name="list"),
     url(r'^app/person/(?P<slug>[-\w]+)/$',PersonDetailView.as_view(), name="detail"),
+    url(r'^app/person/create/create/$',PersonCreateView.as_view(),name="create"),
 ]

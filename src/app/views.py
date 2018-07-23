@@ -7,6 +7,8 @@ from django.views.generic.base import View, TemplateResponseMixin, ContextMixin
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 from .models import Person
+from django.urls import reverse
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 
 # class LoginRequiredMixin(object):
@@ -49,3 +51,16 @@ class PersonListView(ListView):
     def get_queryset(self, *args, **kwargs):
         qs = super(PersonListView, self).get_queryset(*args, **kwargs).filter()[:3]
         return qs
+
+class PersonCreateView(CreateView):
+    model = Person
+    template_name = 'form.html'
+    fields = ["name","age"]
+    # success_url = "/app/person/"
+
+    # def form_valid(self, form):
+    #     form.instance.added_by = self.request.user
+    #     return super(PersonCreateView, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse("app:list")
