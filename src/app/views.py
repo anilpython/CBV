@@ -9,6 +9,7 @@ from django.views.generic.list import ListView
 from .models import Person
 from django.urls import reverse
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.http import Http404
 
 
 # class LoginRequiredMixin(object):
@@ -20,6 +21,19 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 #     @method_decorator(login_required)
 #     def dispatch(self, request, *args, **kwargs):
 #         return super(MyView, self).dispatch(request, *args, **kwargs)
+
+class MultipleObjectMixin(object):
+    def get_object(self, queryset=None, *args, **kwargs):
+        slug = self.kwargs.get("slug")
+        if slug:
+            try:
+                obj = self.model.objects.get(slug=slug)
+            except self.model.MultipleObjectsReturned:
+                obj = self.get_queryset().first()
+            except:
+                raise Http404
+            return obj
+        raise Http404
 
 class AppTemplateView(TemplateView):
     template_name = "home.html"
@@ -39,10 +53,22 @@ class MyView(ContextMixin, TemplateResponseMixin, View):
     # def dispatch(self, request, *args, **kwargs):
     #     return super(MyView, self).dispatch(request, *args, **kwargs)
 
-class PersonDetailView(DetailView):
+class PersonDetailView(MultipleObjectMixin, DetailView):
     template_name = "detail.html"    
     lookup_field = "slug"
     model = Person
+
+    # def get_object(self, queryset=None, *args, **kwargs):
+    #     slug = self.kwargs.get("slug")
+    #     if slug:
+    #         try:
+    #             obj = self.model.objects.get(slug=slug)
+    #         except self.model.MultipleObjectsReturned:
+    #             obj = self.get_queryset().first()
+    #         except:
+    #             obj = None
+    #         return obj
+    #     return None
 
 class PersonListView(ListView):
     model = Person
@@ -64,3 +90,8 @@ class PersonCreateView(CreateView):
 
     def get_success_url(self):
         return reverse("app:list")
+
+class PersonUpdateView(UpdateView):
+    model = Person
+    fields = ['name','age','slug'] # form_class = PersonModelForm
+    template_name = "form.html"

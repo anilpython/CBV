@@ -9,6 +9,9 @@ class Person(models.Model):
 	age = models.IntegerField(default=18)
 	slug = models.CharField(max_length=30, blank=True, null=True)
 
+	# class Meta:
+	# 	ordering = ['-name']
+
 	def __str__(self):
 		return self.name
 	def get_absolute_url(self):
